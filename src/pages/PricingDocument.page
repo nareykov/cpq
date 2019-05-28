@@ -1,0 +1,412 @@
+<apex:page renderAs="advanced_pdf" showHeader="false" sidebar="false" standardStylesheets="false" applyBodyTag="false"
+           applyHtmlTag="false" cache="false" controller="PricingDocumentController">
+    <html>
+    <head>
+        <style>
+            @page {
+                margin: 0 0 116px 0;
+                size: A4 landscape;
+
+                @bottom-center {
+                    content: element(footer);
+                    width: 100%;
+                }
+            }
+
+            @page :first {
+                margin: 0 0 0 0;
+            }
+
+            .footer {
+                width: 100%;
+                position: running(footer);
+            }
+
+            @media print {
+                .tableWithText {
+                    page-break-inside: avoid;
+                }
+
+                table {
+                    page-break-inside: avoid;
+                }
+
+                .endPageText {
+                    page-break-inside: avoid;
+                }
+
+                .finalDiv {
+                    page-break-before: always;
+                }
+
+                .footer-paragraphs {
+                    position: relative;
+                    margin-left: 90px;
+                    height: 20px;
+                }
+
+            }
+
+            body {
+                margin: 0;
+            }
+
+            .container {
+                background-color: white;
+                width: 100%;
+                min-height: 842px;
+            }
+
+            .half-width {
+                width: 50%;
+            }
+
+            .right {
+                float: right;
+            }
+
+            .left {
+                float: left;
+            }
+
+            .half-width.right p {
+                padding-left: 15px;
+            }
+
+            .half-width.right h3 {
+                padding-left: 15px;
+            }
+
+            .half-width.right ul {
+                padding-left: 35px;
+            }
+
+            .half-width.left p {
+                padding-right: 15px;
+            }
+
+            .half-width.left h3 {
+                padding-right: 15px;
+            }
+
+            .half-width.left ul {
+                padding-right: 15px;
+                padding-left: 25px;
+            }
+
+            .half-width.left p {
+                margin-left: 5px;
+            }
+
+            .inner {
+                margin:40px 45px 0px 45px;
+            }
+
+            .two-column-container h3 {
+                margin-top: 0px;
+                padding-left: 5px;
+                padding-right: 5px;
+            }
+
+            hr {
+                margin-bottom:40px;
+                margin-top:30px;
+                width:100%;
+                color:#959791;
+            }
+
+            li {
+                font-size:11px;
+                font-family: Arial, Helvetica Neue, Helvetica, sans-serif;
+                line-height:1.6em;
+                margin-left: -1.4em;
+                margin-top:10px;
+                vertical-align:bottom;
+            }
+
+            ol {
+                margin: 12px 0 12px 0;
+                padding-left: 30px;
+            }
+
+            ul {
+                list-style: none;
+            }
+
+            table {
+                width: 100%;
+                margin-bottom: 30px;
+            }
+
+            a {
+                text-decoration: none;
+                color: white;
+                font-size: 11px;
+            }
+
+            .indicativeCostsTable {
+                margin-bottom: 5px;
+            }
+
+            .indicativeCostsTable td {
+                padding: 7px;
+            }
+
+            .logo-bar {
+                background-color:#3C4092;
+                height:90px;
+                margin-bottom:0px;
+            }
+
+            .logo-bar img {
+                margin:10px 0 0 870px;
+            }
+
+            .table-header {
+                background:#3C4092;
+                color:white;
+            }
+
+            h1 {
+                color:white;
+                font-family: 'Roboto', Arial, sans-serif;
+                line-height:1.2em;
+                font-size:60px;
+                font-weight:normal;
+                margin-left:5px;
+            }
+
+            h2 {
+                font-size:23px;
+                font-family: 'Roboto', Arial, Helvetica Neue, Helvetica, sans-serif;
+                font-weight:normal;
+                margin-bottom:30px;
+                margin-left:5px;
+            }
+
+            h3 {
+                font-family: 'Roboto',sans-serif;
+                font-size:20px;
+                color:#3C4092;
+                font-weight:normal;
+                margin: 8px 0 7px 0px;
+            }
+
+            h4 {
+                font-family: 'Roboto',sans-serif;
+                text-align: left;
+                margin:0px;
+                padding-top: 0px;
+                font-weight:normal;
+                font-size: 15px;
+            }
+
+            th,td {
+                padding:9px;
+            }
+
+            td {
+                font-size:12px;
+                font-family: 'Roboto', Arial, Helvetica Neue, Helvetica, sans-serif;
+            }
+
+            p {
+                margin-bottom: 12px;
+                font-size:11px;
+                font-family: 'Roboto', Arial, Helvetica Neue, Helvetica, sans-serif;
+                line-height:1.6em;
+            }
+
+            .light-td {
+                background-color:#cdcee3;
+            }
+            .dark-td {
+                background-color:#9d9ec8;
+            }
+
+            .banner-logo {
+                width:180px;
+            }
+
+            .banner h1 {
+                box-sizing: border-box;
+                padding-top: 40px;
+                margin: 0 0 0 40px;
+            }
+
+            .footer {
+                background-color:#3C4092;
+                height:115px;
+                color:white;
+            }
+
+            .footer-paragraphs {
+                margin-top:50px; margin-left:45px; float:left;
+            }
+        </style>
+    </head>
+    <div class="container">
+
+        <div class="banner">
+            <h1>Your pricing<br />proposal</h1>
+        </div>
+
+        <div class="inner">
+                <apex:variable value="{!0}" var="iterator"/>
+                <apex:variable value="{!iterator+1}" var="iterator"/>
+                <div style="margin-top: 40px;" class="tableWithText">
+
+                    <h2>Quote Details: {!quote.Name}</h2>
+
+                    <table cellspacing="5">
+                        <apex:variable var="num" value="{!0}"/>
+
+                        <tr class="{!IF(MOD(num, 2) == 0, 'light-td', 'dark-td')}">
+                            <td>Size:</td>
+                            <td>
+                                <apex:outputText value="{0, number, ##,###,##0}">
+                                    <apex:param value="{!ROUND(quote.GrandTotal, 0)}"/>
+                                </apex:outputText> Sq ft
+                            </td>
+                            <apex:variable var="num" value="{!num + 1}"/>
+                        </tr>
+
+                        <tr class="{!IF(MOD(num, 2) == 0, 'light-td', 'dark-td')}">
+                            <td>Rent:</td>
+                            <td>
+                                <apex:outputText value="£{0,number,##,###,##0.00}">
+                                    <apex:param value="{!ROUND(quote.GrandTotal * 12, 2)}"/>
+                                </apex:outputText>
+                                per sq ft per annum
+                            </td>
+                            <apex:variable var="num" value="{!num + 1}"/>
+                        </tr>
+
+                        <tr class="{!IF(MOD(num, 2) == 0, 'light-td', 'dark-td')}">
+                            <td>Contact Name:</td>
+                            <td>
+                                {!quote.ContactId}
+                            </td>
+                            <apex:variable var="num" value="{!num + 1}"/>
+                        </tr>
+
+                        <tr class="{!IF(MOD(num, 2) == 0, 'light-td', 'dark-td')}">
+                            <td>Email:</td>
+                            <td>
+                                {!quote.Email}
+                            </td>
+                            <apex:variable var="num" value="{!num + 1}"/>
+                        </tr>
+
+                        <tr class="{!IF(MOD(num, 2) == 0, 'light-td', 'dark-td')}">
+                            <td>Expiration Date:</td>
+                            <td>
+                                {!quote.ExpirationDate}
+                            </td>
+                            <apex:variable var="num" value="{!num + 1}"/>
+                        </tr>
+
+                        <tr class="{!IF(MOD(num, 2) == 0, 'light-td', 'dark-td')}">
+                            <td>Line Items:</td>
+                            <td>
+                                {!quote.LineItemCount}
+                            </td>
+                            <apex:variable var="num" value="{!num + 1}"/>
+                        </tr>
+
+                        <tr class="{!IF(MOD(num, 2) == 0, 'light-td', 'dark-td')}">
+                            <td>Contact Name:</td>
+                            <td>
+                                {!quote.ContactId}
+                            </td>
+                            <apex:variable var="num" value="{!num + 1}"/>
+                        </tr>
+
+                        <tr class="{!IF(MOD(num, 2) == 0, 'light-td', 'dark-td')}">
+                            <td>Email:</td>
+                            <td>
+                                {!quote.Email}
+                            </td>
+                            <apex:variable var="num" value="{!num + 1}"/>
+                        </tr>
+
+                        <tr class="{!IF(MOD(num, 2) == 0, 'light-td', 'dark-td')}">
+                            <td>Expiration Date:</td>
+                            <td>
+                                {!quote.ExpirationDate}
+                            </td>
+                            <apex:variable var="num" value="{!num + 1}"/>
+                        </tr>
+
+                        <tr class="{!IF(MOD(num, 2) == 0, 'light-td', 'dark-td')}">
+                            <td>Line Items:</td>
+                            <td>
+                                {!quote.LineItemCount}
+                            </td>
+                            <apex:variable var="num" value="{!num + 1}"/>
+                        </tr>
+                    </table>
+                </div>
+
+            <div style="margin-top: 40px;" class="tableWithText">
+
+                <h2>Quote Line Details:</h2>
+
+                <table cellspacing="5">
+                    <apex:variable var="num" value="{!0}"/>
+
+                    <tr class="{!IF(MOD(num, 2) == 0, 'light-td', 'dark-td')}">
+                        <td>Product</td>
+                        <td>Quantity</td>
+                        <td>Date</td>
+                        <td>Discount</td>
+                        <td>ListPrice</td>
+                        <td>TotalPrice</td>
+                        <apex:variable var="num" value="{!num + 1}"/>
+                    </tr>
+
+                    <apex:repeat value="{!lineItems}" var="lineItem">
+                        <tr class="{!IF(MOD(num, 2) == 0, 'light-td', 'dark-td')}">
+                            <td>{!lineItem.Product2Id}</td>
+                            <td>{!lineItem.Quantity}</td>
+                            <td>{!lineItem.ServiceDate}</td>
+                            <td>{!lineItem.Discount}</td>
+                            <td>{!lineItem.ListPrice}</td>
+                            <td>{!lineItem.TotalPrice}</td>
+                            <apex:variable var="num" value="{!num + 1}"/>
+                        </tr>
+                    </apex:repeat>
+                </table>
+            </div>
+
+            <div class="tableWithText">
+                <h3>Please note:</h3>
+
+                <ol>
+                    <li>The amounts shown above are always subject to VAT and are subject to contract.</li>
+
+                    <li>Each year we&rsquo;ll review your service charge and insurance payments but we&rsquo;ll always tell you about any changes first.</li>
+
+                    <li>You will be sent an invoice every quarter with all the charges due for payment, the amounts above will give you an indication of those costs, but are for illustrative purposes only.</li>
+
+                </ol>
+
+                <h3>Don&rsquo;t forget:</h3>
+
+                <h4>Utilities</h4>
+
+                <p>Utilities are charged based on your usage, in addition to the amounts we&rsquo;ve shown above.</p>
+
+                <h4>Business rates</h4>
+
+                <p>Business rates for your office and car parking spaces are payable to the local authority. To get an accurate idea of how much they&rsquo;re likely to be contact your Local Authority and they&rsquo;ll be able to give you everything you need.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p class="footer-paragraphs" style="margin-left:5px;">0800 731 0300</p>
+        <p class="footer-paragraphs" style="margin-left:5px;"><a href="https://bruntwood.co.uk/" target="_blank">www.bruntwood.co.uk</a></p>
+    </div>
+    </html>
+</apex:page>

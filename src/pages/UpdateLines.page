@@ -1,0 +1,46 @@
+<apex:page controller="UpdateLinesController" lightningStylesheets="true" docType="html-5.0">
+    <apex:form>
+        <apex:pageBlock title="Update Subscriptions">
+            <apex:pageBlockSection title="Fields to update" columns="2">
+                <br/>
+                <apex:inputCheckbox label="Select All" value="{!selectAllFields}" id="ter">
+                    <apex:actionSupport event="onchange" action="{!checkSelectAllFields}"/>
+                </apex:inputCheckbox>
+                <apex:repeat value="{!fieldWrappers}" var="fw">
+                    <apex:inputField value="{!subscription[fw.field.fieldPath]}" required="false"/>
+                    <apex:inputCheckbox value="{!fw.active}" label=" "/>
+                </apex:repeat>
+            </apex:pageBlockSection>
+            <br/>
+            <apex:outputText style="font-weight:800" value="Subscriptions to update"/>
+            <apex:pageBlockTable value="{!subscriptionWrappers}" var="sw">
+                <apex:column value="{!sw.subscription.Quantity}" />
+                <apex:column value="{!sw.subscription.Discount}" />
+                <apex:column value="{!sw.subscription.ListPrice}" />
+                <apex:column value="{!sw.subscription.UnitPrice}" />
+                <apex:column>
+                    <apex:facet name="header">
+                        <apex:inputCheckbox label="Select All" value="{!selectAllSubscriptions}">
+                            <apex:actionSupport event="onchange" action="{!checkSelectAllSubscriptions}"/>
+                        </apex:inputCheckbox>
+                    </apex:facet>
+                    <apex:inputCheckbox value="{!sw.active}" />
+                </apex:column>
+            </apex:pageBlockTable>
+            <div align="center" style="margin: 5px">
+                <apex:outputpanel rendered="{!(!validationError)}">
+                    <apex:commandButton value="Save" action="{!validateAndSave}"/>
+                    <apex:commandButton value="Cancel" action="{!cancel}"/>
+                </apex:outputPanel>
+                <apex:outputpanel rendered="{!validationError}">
+                    <apex:pageMessages></apex:pageMessages>
+                    <apex:commandButton value="Yes" action="{!save}"/>
+                    <apex:commandButton value="No" action="{!resetValidationError}"/>
+                </apex:outputPanel>
+                <apex:outputpanel rendered="{!saveError}">
+                    <apex:pageMessages escape="false"></apex:pageMessages>
+                </apex:outputPanel>
+            </div>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>
